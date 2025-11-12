@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mystic Realms</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #2c0a4d, #1a0830, #0f0c29);
+      color: #e0d6ff;
+      padding: 16px;
+      text-align: center;
+      min-height: 100vh;
+      color-scheme: dark;
+      overflow-x: hidden;
+    }
+
+    h1 {
+      font-size: 28px;
+      background: linear-gradient(to right, #b19cd9, #9370db, #7b68ee);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 16px;
+      text-shadow: 0 0 10px rgba(177, 156, 217, 0.5);
+    }
+
+    h2 {
+      font-size: 22px;
+      color: #d8bfd8;
+      margin: 16px 0;
+    }
+
+    .screen {
+      display: none;
+    }
+
+    .active {
+      display: block;
+      animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .btn {
+      background: linear-gradient(45deg, #8a2be2, #6a0dad, #4b0082);
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 50px;
+      font-weight: bold;
+      cursor: pointer;
+      margin: 10px 0;
+      width: 90%;
+      max-width: 300px;
+      box-shadow: 0 6px 12px rgba(138, 43, 226, 0.4);
+      transition: transform 0.2s, box-shadow 0.2s;
+      font-size: 16px;
+    }
+
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 16px rgba(138, 43, 226, 0.6);
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+    }
+
+    .character {
+      width: 120px;
+      height: 120px;
+      background: radial-gradient(circle, #9370db, #6a0dad);
+      border-radius: 50%;
+      margin: 20px auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 60px;
+      box-shadow: 0 0 20px rgba(147, 112, 219, 0.6);
+      border: 3px solid #b19cd9;
+    }
+
+    .stats {
+      background: rgba(106, 13, 173, 0.3);
+      padding: 12px;
+      border-radius: 16px;
+      margin: 16px;
+      font-size: 16px;
+      border: 1px solid #9370db;
+    }
+
+    .progress {
+      height: 16px;
+      background: #333;
+      border-radius: 8px;
+      margin: 12px 0;
+      overflow: hidden;
+      position: relative;
+      border: 1px solid #7b68ee;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(to right, #9370db, #b19cd9);
+      width: 0%;
+      transition: width 0.5s ease;
+      border-radius: 8px;
+    }
+
+    .battle-screen {
+      background: rgba(26, 26, 46, 0.8);
+      padding: 20px;
+      border-radius: 16px;
+      margin: 16px;
+      box-shadow: 0 0 20px rgba(138, 43, 226, 0.4);
+      border: 1px solid #7b68ee;
+    }
+
+    .monster {
+      width: 140px;
+      height: 140px;
+      background: radial-gradient(circle, #d63384, #c2185b);
+      border-radius: 16px;
+      margin: 20px auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 60px;
+      box-shadow: 0 0 25px rgba(214, 51, 132, 0.6);
+      border: 3px solid #f06292;
+    }
+
+    .item {
+      display: inline-block;
+      width: 60px;
+      height: 60px;
+      background: rgba(155, 89, 182, 0.3);
+      border-radius: 12px;
+      margin: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+      border: 1px solid #9b59b6;
+    }
+  </style>
+</head>
+<body>
+  <!-- Главный экран -->
+  <div id="main-screen" class="screen active">
+    <h1>🧙‍♂️ Mystic Realms</h1>
+    <div class="character">🧙‍♂️</div>
+
+    <div class="stats">
+      <p>Уровень: <span id="level">1</span></p>
+      <p>XP: <span id="xp">0</span> / <span id="xp-needed">100</span></p>
+      <div class="progress">
+        <div id="xp-bar" class="progress-bar"></div>
+      </div>
+      <p>Здоровье: <span id="hp">100</span> / <span id="max-hp">100</span></p>
+    </div>
+
+    <button class="btn" onclick="showScreen('map')">🗺️ Карта</button>
+    <button class="btn" onclick="showScreen('inventory')">🎒 Инвентарь</button>
+    <button class="btn" onclick="showScreen('shop')">🏪 Магазин</button>
+  </div>
+
+  <!-- Карта -->
+  <div id="map-screen" class="screen">
+    <h2>🗺️ Выберите локацию</h2>
+    <button class="btn" onclick="startBattle('forest')">🌲 Лес</button>
+    <button class="btn" onclick="startBattle('castle')">🏰 Замок</button>
+    <button class="btn" onclick="startBattle('dragon')">🐉 Драконий остров</button>
+    <button class="btn" onclick="showScreen('main')">🏠 Назад</button>
+  </div>
+
+  <!-- Боевой экран -->
+  <div id="battle-screen" class="screen">
+    <h2>⚔️ Сражение!</h2>
+    <div class="monster">🐉</div>
+    <p>Здоровье монстра: <span id="monster-hp">100</span></p>
+    <p>Ваше здоровье: <span id="player-hp">100</span></p>
+    <button class="btn" onclick="attack()">⚔️ Атаковать</button>
+    <button class="btn" onclick="showScreen('map')">бежать</button>
+  </div>
+
+  <!-- Инвентарь -->
+  <div id="inventory-screen" class="screen">
+    <h2>🎒 Инвентарь</h2>
+    <div class="item">🧪</div> <span id="potion-count">0</span>
+    <button class="btn" onclick="usePotion()">🧪 Использовать зелье</button>
+    <button class="btn" onclick="showScreen('main')">🏠 Назад</button>
+  </div>
+
+  <!-- Магазин -->
+  <div id="shop-screen" class="screen">
+    <h2>🏪 Магазин (Stars)</h2>
+    <button class="btn" onclick="buyItem('potion')">🧪 Зелье здоровья (5 XTR)</button>
+    <button class="btn" onclick="buyItem('hat')">🎩 Шляпа мага (20 XTR)</button>
+    <button class="btn" onclick="showScreen('main')">🏠 Назад</button>
+  </div>
+
+  <script>
+    // Данные игрока
+    let player = {
+      level: 1,
+      xp: 0,
+      xpNeeded: 100,
+      hp: 100,
+      maxHp: 100,
+      potions: 0,
+      items: []
+    };
+
+    // Монстр
+    let monster = { hp: 100, maxHp: 100 };
+
+    // Показать экран
+    function showScreen(screenId) {
+      document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+      document.getElementById(screenId).classList.add('active');
+    }
+
+    // Начать бой
+    function startBattle(location) {
+      monster.hp = 50 + (player.level * 10);
+      monster.maxHp = monster.hp;
+      document.getElementById('monster-hp').textContent = monster.hp;
+      document.getElementById('player-hp').textContent = player.hp;
+      showScreen('battle-screen');
+    }
+
+    // Атака
+    function attack() {
+      const damage = 10 + Math.floor(Math.random() * 10);
+      monster.hp -= damage;
+      document.getElementById('monster-hp').textContent = monster.hp;
+
+      if (monster.hp <= 0) {
+        // Победа
+        const xpGained = 20 + player.level * 5;
+        player.xp += xpGained;
+        alert(`Победа! Получено ${xpGained} XP`);
+        checkLevelUp();
+        showScreen('map');
+        return;
+      }
+
+      // Монстр атакует
+      const monsterDamage = 5 + Math.floor(Math.random() * 5);
+      player.hp -= monsterDamage;
+      document.getElementById('player-hp').textContent = player.hp;
+
+      if (player.hp <= 0) {
+        alert("Вы проиграли! Но можно начать заново.");
+        player.hp = player.maxHp;
+        showScreen('main');
+      }
+    }
+
+    // Проверка повышения уровня
+    function checkLevelUp() {
+      if (player.xp >= player.xpNeeded) {
+        player.level++;
+        player.xp = 0;
+        player.xpNeeded = player.level * 100;
+        player.maxHp += 20;
+        player.hp = player.maxHp;
+        alert(`Поздравляем! Новый уровень: ${player.level}`);
+      }
+      updateUI();
+    }
+
+    // Использовать зелье
+    function usePotion() {
+      if (player.potions > 0) {
+        player.hp = Math.min(player.maxHp, player.hp + 50);
+        player.potions--;
+        document.getElementById('potion-count').textContent = player.potions;
+        document.getElementById('player-hp').textContent = player.hp;
+        alert("Зелье выпито! +50 HP");
+      } else {
+        alert("Зелья закончились!");
+      }
+    }
+
+    // Покупка предмета
+    function buyItem(item) {
+      let cost = 0;
+      if (item === 'potion') cost = 5;
+      if (item === 'hat') cost = 20;
+
+      // Открываем инвойс через Telegram
+      Telegram.WebApp.openInvoice(`https://t.me/my_esim_shop_bot?start=buy_${item}`, (status) => {
+        if (status === 'paid') {
+          if (item === 'potion') player.potions++;
+          alert(`Покупка прошла! У вас теперь ${player.potions} зелий.`);
+        }
+      });
+    }
+
+    // Обновление UI
+    function updateUI() {
+      document.getElementById('level').textContent = player.level;
+      document.getElementById('xp').textContent = player.xp;
+      document.getElementById('xp-needed').textContent = player.xpNeeded;
+      const percent = (player.xp / player.xpNeeded) * 100;
+      document.getElementById('xp-bar').style.width = `${percent}%`;
+      document.getElementById('potion-count').textContent = player.potions;
+      document.getElementById('hp').textContent = player.hp;
+      document.getElementById('max-hp').textContent = player.maxHp;
+    }
+
+    // Инициализация
+    updateUI();
+  </script>
+</body>
+</html>
