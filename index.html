@@ -8,64 +8,95 @@
 </head>
 <body>
     <div id="game-container">
+        <!-- Start Screen Overlay -->
+        <div id="overlay-screen" class="active">
+            <h1 id="overlay-title">ABYSS WALKER</h1>
+            <p id="overlay-desc">Спускайся глубже. Сражайся. Выживай.</p>
+            <button id="start-btn" class="btn-primary">НАЧАТЬ ИГРУ</button>
+            <div id="high-scores" class="hidden">
+                <h3>Лучшие результаты</h3>
+                <ul id="scores-list"></ul>
+            </div>
+        </div>
+
         <!-- Header / Stats -->
-        <header id="ui-header">
+        <header id="ui-header" class="hidden">
             <div class="stat-box">
                 <span class="label">HP</span>
                 <span id="hp-val" class="val hp">100/100</span>
+            </div>
+            <div class="stat-box">
+                <span class="label">MANA</span>
+                <span id="mana-val" class="val mana">50/50</span>
             </div>
             <div class="stat-box">
                 <span class="label">LVL</span>
                 <span id="lvl-val" class="val">1</span>
             </div>
             <div class="stat-box">
-                <span class="label">XP</span>
-                <span id="xp-val" class="val">0/50</span>
+                <span class="label">MAGIC</span>
+                <span id="magic-lvl-val" class="val">0</span>
             </div>
-            <div class="stat-box">
-                <span class="label">GOLD</span>
-                <span id="gold-val" class="val gold">0</span>
-            </div>
-            <div class="stat-box">
-                <span class="label">FLOOR</span>
-                <span id="floor-val" class="val">1</span>
+            <div class="stat-box compass">
+                <span id="compass-needle" class="val">N</span>
             </div>
         </header>
 
         <!-- Main Game Area -->
         <main id="game-area">
-            <canvas id="game-canvas"></canvas>
+            <canvas id="gameCanvas"></canvas>
             
             <!-- Overlay Messages -->
             <div id="message-log"></div>
             
-            <!-- Start/Game Over Screen -->
-            <div id="overlay-screen" class="active">
-                <h1 id="overlay-title">DUNGEON CRAWLER</h1>
-                <p id="overlay-desc">Спускайся глубже. Сражайся. Выживай.</p>
-                <button id="start-btn" class="btn-primary">НАЧАТЬ ИГРУ</button>
-                <div id="high-scores" class="hidden">
-                    <h3>Лучшие результаты</h3>
-                    <ul id="scores-list"></ul>
+            <!-- Combat Modal -->
+            <div id="action-modal" class="hidden">
+                <h2 id="enemy-name">Враг</h2>
+                <div id="enemy-sprite" class="enemy-sprite">👹</div>
+                <div class="enemy-hp-bar">
+                    <span>HP: </span><span id="enemy-hp">100</span>
+                </div>
+                <div class="combat-actions">
+                    <button id="btn-attack" class="btn-combat">⚔️ Атака</button>
+                    <button id="btn-spell" class="btn-combat">🔮 Заклинание</button>
+                    <button id="btn-flee" class="btn-combat">🏃 Побег</button>
                 </div>
             </div>
         </main>
 
         <!-- Controls / Inventory -->
-        <footer id="ui-footer">
+        <footer id="ui-footer" class="hidden">
             <div class="panel">
-                <h3>ИНВЕНТАРЬ</h3>
-                <div id="inventory-list" class="list-container">
-                    <div class="empty-msg">Пусто</div>
-                </div>
+                <button id="btn-inventory" class="btn-secondary">🎒 Инвентарь</button>
+                <button id="btn-save" class="btn-secondary">💾 Сохранить</button>
+                <button id="btn-load" class="btn-secondary">📂 Загрузить</button>
+                <button id="btn-new-game" class="btn-danger">🔄 Заново</button>
             </div>
             <div class="panel controls-hint">
                 <p>WASD / Стрелки - Движение</p>
                 <p>SPACE - Пропустить ход</p>
                 <p>E - Подобрать предмет</p>
-                <p>I - Инвентарь (Использовать)</p>
             </div>
         </footer>
+
+        <!-- Inventory Modal -->
+        <div id="inventory-modal" class="modal hidden">
+            <div class="modal-content">
+                <h2>Инвентарь</h2>
+                <div id="inventory-grid" class="inventory-grid"></div>
+                <button id="btn-close-inv" class="btn-primary">Закрыть</button>
+            </div>
+        </div>
+        
+        <!-- Stats Panel -->
+        <div id="stats-panel" class="hidden">
+            <h3>Характеристики</h3>
+            <p>Сила: <span id="stat-str">10</span></p>
+            <p>Ловкость: <span id="stat-dex">10</span></p>
+            <p>Интеллект: <span id="stat-int">10</span></p>
+            <p>Урон: <span id="stat-dmg">5-10</span></p>
+            <p>Защита: <span id="stat-def">5</span></p>
+        </div>
     </div>
 
     <script src="game.js"></script>

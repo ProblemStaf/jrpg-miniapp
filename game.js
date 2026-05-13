@@ -53,11 +53,15 @@ const ITEM_TYPES = [
 // --- DOM Elements ---
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
+const overlayScreen = document.getElementById('overlay-screen');
+const startBtn = document.getElementById('start-btn');
+const uiHeader = document.getElementById('ui-header');
+const uiFooter = document.getElementById('ui-footer');
+
 const ui = {
     hp: document.getElementById('hp-val'),
-    maxHp: document.getElementById('max-hp-val'),
     mana: document.getElementById('mana-val'),
-    maxMana: document.getElementById('max-mana-val'),
+    maxMana: document.getElementById('max-mana-val') || document.getElementById('mana-val'),
     lvl: document.getElementById('lvl-val'),
     magicLvl: document.getElementById('magic-lvl-val'),
     compass: document.getElementById('compass-needle'),
@@ -79,9 +83,15 @@ const ui = {
 function init() {
     resize();
     window.addEventListener('resize', resize);
-    generateMap();
-    spawnEnemies();
-    spawnItems();
+    
+    // Start button handler
+    startBtn.addEventListener('click', () => {
+        overlayScreen.classList.remove('active');
+        overlayScreen.classList.add('hidden');
+        uiHeader.classList.remove('hidden');
+        uiFooter.classList.remove('hidden');
+        newGame();
+    });
     
     // Controls
     document.addEventListener('keydown', handleKey);
@@ -100,7 +110,7 @@ function init() {
     setupMobileControls();
 
     log("Добро пожаловать в Abyss Walker!");
-    log("Используйте WASD для движения, E для взаимодействия.");
+    log("Нажмите НАЧАТЬ ИГРУ чтобы начать приключение.");
     
     requestAnimationFrame(gameLoop);
 }
@@ -637,10 +647,31 @@ function loadGame() {
 
 // --- Mobile Controls ---
 function setupMobileControls() {
+    // Create mobile controls if not exist
+    let mobileControls = document.getElementById('mobile-controls');
+    if (!mobileControls) {
+        mobileControls = document.createElement('div');
+        mobileControls.id = 'mobile-controls';
+        mobileControls.innerHTML = `
+            <div class="d-pad">
+                <button id="m-up">▲</button>
+                <div class="row">
+                    <button id="m-left">◀</button>
+                    <button id="m-right">▶</button>
+                </div>
+                <button id="m-down">▼</button>
+            </div>
+            <button id="m-action" class="action-btn">E</button>
+        `;
+        document.body.appendChild(mobileControls);
+    }
+
     const bind = (id, action) => {
         const btn = document.getElementById(id);
-        btn.addEventListener('touchstart', (e) => { e.preventDefault(); action(); });
-        btn.addEventListener('mousedown', (e) => { e.preventDefault(); action(); });
+        if (btn) {
+            btn.addEventListener('touchstart', (e) => { e.preventDefault(); action(); });
+            btn.addEventListener('mousedown', (e) => { e.preventDefault(); action(); });
+        }
     };
 
     bind('m-up', () => moveForward(0.2));
