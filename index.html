@@ -3,106 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Поиски Тайн - RPG</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <title>Dungeon Crawler: Roguelike</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="dark-theme">
-    <!-- Верхняя панель -->
-    <header class="game-header">
-        <div class="stats-row">
-            <div class="stat hp-stat">
-                <span>❤️ HP:</span>
-                <span id="hp">100/100</span>
-                <div class="bar-container"><div id="hp-bar" class="bar hp-bar"></div></div>
+<body>
+    <div id="game-container">
+        <!-- Header / Stats -->
+        <header id="ui-header">
+            <div class="stat-box">
+                <span class="label">HP</span>
+                <span id="hp-val" class="val hp">100/100</span>
             </div>
-            <div class="stat gold-stat">
-                <span>💰</span>
-                <span id="gold">0</span>
+            <div class="stat-box">
+                <span class="label">LVL</span>
+                <span id="lvl-val" class="val">1</span>
             </div>
-            <div class="stat level-stat">
-                <span>⭐ Lvl:</span>
-                <span id="level">1</span>
+            <div class="stat-box">
+                <span class="label">XP</span>
+                <span id="xp-val" class="val">0/50</span>
             </div>
-        </div>
-        <div class="exp-row">
-            <span>📊 Опыт:</span>
-            <span id="exp">0/100</span>
-            <div class="bar-container"><div id="exp-bar" class="bar exp-bar"></div></div>
-        </div>
-    </header>
+            <div class="stat-box">
+                <span class="label">GOLD</span>
+                <span id="gold-val" class="val gold">0</span>
+            </div>
+            <div class="stat-box">
+                <span class="label">FLOOR</span>
+                <span id="floor-val" class="val">1</span>
+            </div>
+        </header>
 
-    <!-- Игровая карта -->
-    <main class="game-map" id="game-map">
-        <div id="player" class="player">🧙‍♂️</div>
-        <!-- Декоративные элементы -->
-        <div class="tile tree" style="left: 120px; top: 80px;">🌲</div>
-        <div class="tile tree" style="left: 200px; top: 160px;">🌲</div>
-        <div class="tile chest" style="left: 280px; top: 120px;">📦</div>
-        <div class="tile rock" style="left: 80px; top: 200px;">🪨</div>
-    </main>
-
-    <!-- Панель действий -->
-    <section class="action-panel">
-        <button id="daily-btn" class="action-btn daily">🎁 Ежедневно</button>
-        <button id="fight-btn" class="action-btn fight">⚔️ Бой</button>
-        <button id="heal-btn" class="action-btn heal">💚 Лечение</button>
-    </section>
-
-    <!-- Инвентарь -->
-    <section class="inventory-panel">
-        <h3>🎒 Инвентарь</h3>
-        <div id="inventory-list" class="inventory-list">
-            <div>Загрузка...</div>
-        </div>
-    </section>
-
-    <!-- Крафт -->
-    <section class="craft-panel">
-        <h3>🔨 Крафт</h3>
-        <div class="craft-recipes">
-            <button class="craft-btn" data-recipe="Зелье маны">
-                🧪 Зелье маны<br><small>Трава x2, Вода x1</small>
-            </button>
-            <button class="craft-btn" data-recipe="Стальной меч">
-                ⚔️ Стальной меч<br><small>Железо x3, Дерево x2</small>
-            </button>
-            <button class="craft-btn" data-recipe="Броня">
-                🛡️ Броня<br><small>Кожа x5, Железо x2</small>
-            </button>
-        </div>
-    </section>
-
-    <!-- Лидерборд -->
-    <section class="leaderboard-panel">
-        <h3>🏆 Топ игроков</h3>
-        <div id="leaderboard-list" class="leaderboard-list">
-            <div>Загрузка...</div>
-        </div>
-    </section>
-
-    <!-- Модальное окно боя -->
-    <div id="battle-modal" class="modal battle-modal" style="display:none;">
-        <div class="modal-content">
-            <h2>⚔️ Бой с <span id="enemy-name">Гоблин</span></h2>
-            <div class="enemy-stats">
-                <div class="enemy-hp-bar">
-                    <span>HP: <span id="enemy-hp">50/50</span></span>
-                    <div class="bar-container"><div id="enemy-hp-bar" class="bar enemy-bar"></div></div>
+        <!-- Main Game Area -->
+        <main id="game-area">
+            <canvas id="game-canvas"></canvas>
+            
+            <!-- Overlay Messages -->
+            <div id="message-log"></div>
+            
+            <!-- Start/Game Over Screen -->
+            <div id="overlay-screen" class="active">
+                <h1 id="overlay-title">DUNGEON CRAWLER</h1>
+                <p id="overlay-desc">Спускайся глубже. Сражайся. Выживай.</p>
+                <button id="start-btn" class="btn-primary">НАЧАТЬ ИГРУ</button>
+                <div id="high-scores" class="hidden">
+                    <h3>Лучшие результаты</h3>
+                    <ul id="scores-list"></ul>
                 </div>
             </div>
-            <div class="battle-actions">
-                <button onclick="fight('attack')" class="battle-btn attack">⚔️ Атака</button>
-                <button onclick="fight('heal')" class="battle-btn heal">💚 Лечение</button>
-                <button onclick="hideBattleUI()" class="battle-btn run">🏃 Бежать</button>
+        </main>
+
+        <!-- Controls / Inventory -->
+        <footer id="ui-footer">
+            <div class="panel">
+                <h3>ИНВЕНТАРЬ</h3>
+                <div id="inventory-list" class="list-container">
+                    <div class="empty-msg">Пусто</div>
+                </div>
             </div>
-            <div id="battle-log" class="battle-log"></div>
-        </div>
+            <div class="panel controls-hint">
+                <p>WASD / Стрелки - Движение</p>
+                <p>SPACE - Пропустить ход</p>
+                <p>E - Подобрать предмет</p>
+                <p>I - Инвентарь (Использовать)</p>
+            </div>
+        </footer>
     </div>
 
-    <!-- Уведомления -->
-    <div id="notifications" class="notifications"></div>
-
-    <script src="script.js"></script>
+    <script src="game.js"></script>
 </body>
 </html>
